@@ -1,0 +1,35 @@
+os: linux
+dist: bionic
+language: php
+php: 7.4
+services:
+  - mysql
+before_script:
+  - composer install --no-interaction
+  - composer dump-env prod --empty
+deploy:
+  - provider: s3
+    access_key_id: $AWS_ACCESS_KEY
+    secret_access_key: $AWS_SECRET_KEY
+    local_dir: films_upload
+    skip_cleanup: true
+    on: &2
+      repo: rthompson961/films
+    bucket: richard-films
+    region: eu-west-2
+  - provider: codedeploy
+    access_key_id: $AWS_ACCESS_KEY
+    secret_access_key: $AWS_SECRET_KEY
+    bucket: richard-films
+    key: latest.zip
+    bundle_type: zip
+    application: richard-films-app
+    deployment_group: richard-films-group
+    region: eu-west-2
+    on: *2
+script:
+  - phpunit
+  - zip -r latest *
+  - zip -r latest .env.local.php
+  - mkdir -p films_upload
+  - mv latest.zip films_upload/latest.zip
