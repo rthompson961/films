@@ -1,0 +1,26 @@
+easy_admin:
+    site_name: Films
+    design:
+        menu:
+            - { route: 'film', label: 'Back to main website', icon: 'home' }
+            - { entity: 'Film', label: 'Films', icon: 'film' }
+            - { entity: 'Comment', label: 'Comments', icon: 'comments' }
+    entities:
+        Film:
+            class: App\Entity\Film
+        Comment:
+            class: App\Entity\Comment
+            list:
+                fields:
+                    - author
+                    - { property: 'email', type: 'email' }
+                    - { property: 'createdAt', type: 'datetime' }
+                sort: ['createdAt', 'ASC']
+                filters: ['film']
+            edit:
+                fields:
+                    - { property: 'film' }
+                    - { property: 'createdAt', type: datetime, type_options: { attr: { readonly: true } } }
+                    - 'author'
+                    - { property: 'email', type: 'email' }
+                    - text
