@@ -2,7 +2,7 @@ easy_admin:
     site_name: Films
     design:
         menu:
-            - { route: 'film', label: 'Back to main website', icon: 'home' }
+            - { route: 'home', label: 'Back to Website', icon: 'home' }
             - { entity: 'Film', label: 'Films', icon: 'film' }
             - { entity: 'Comment', label: 'Comments', icon: 'comments' }
     entities:

@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ film }}{% endblock %}
+
+{% block body %}
+<h2>{{ film }}</h2>
+
+{% if comments|length > 0 %}
+    <p>There are {{ comments|length }} comments.</p>
+
+    {% for comment in comments %}
+        {% if comment.photo %}
+            <img src="{{ asset('uploads/') ~ comment.photo }}" alt="{{ film }}" />
+        {% endif %}
+
+        <h4>{{ comment.author }}</h4>
+        <small>{{ comment.createdAt|format_datetime('medium', 'short') }}</small>
+        <p>{{ comment.text }}</p>
+    {% endfor %}
+
+    {% if previous >= 0 %}
+        <a href="{{ path('film', { id: film.id, offset: previous }) }}">Previous</a>
+    {% endif %}
+    {% if next < comments|length %}
+        <a href="{{ path('film', { id: film.id, offset: next }) }}">Next</a>
+    {% endif %}
+
+{% else %}
+    <p>No comments posted.</p>
+{% endif %}
+{% endblock %}
