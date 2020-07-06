@@ -2,8 +2,9 @@
 
 namespace App\Controller;
 
-use App\Entity\Comment;
 use App\Entity\Film;
+use App\Repository\CommentRepository;
+use App\Repository\FilmRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -13,27 +14,27 @@ class FilmController extends AbstractController
     /**
      * @Route("/", name="home")
      */
-    public function index()
+    public function index(FilmRepository $filmRepository)
     {
         return $this->render('film/index.html.twig', [
-            'films' => $this->getDoctrine()->getRepository(Film::class)->findAll()
+            'films' => $filmRepository->findAll()
         ]);
     }
 
     /**
      * @Route("/show/{id}", name="film")
      */
-    public function show(Film $film, Request $request)
+    public function show(Film $film, Request $request, CommentRepository $commentRepository)
     {
-        $repo = $this->getDoctrine()->getRepository(Comment::class);
+        // offset must be an integer no less than zero
         $offset = max(0, $request->query->getInt('offset', 0));
-        $paginator = $repo->getCommentPaginator($film, $offset);
+        $paginator = $commentRepository->getCommentPaginator($film, $offset);
 
         return $this->render('film/show.html.twig', [
             'film' => $film,
             'comments' => $paginator,
-            'previous' => $offset - $repo::PAGINATOR_PER_PAGE,
-            'next' => min(count($paginator), $offset + $repo::PAGINATOR_PER_PAGE)
+            'previous' => $offset - CommentRepository::PAGINATOR_PER_PAGE,
+            'next' => min(count($paginator), $offset + CommentRepository::PAGINATOR_PER_PAGE)
         ]);
     }
 }
