@@ -9,6 +9,7 @@ before_script:
   - composer dump-env prod --empty
   - bin/console doctrine:database:create
   - bin/console doctrine:migrations:migrate -q
+  - bin/console doctrine:fixtures:load -q
 deploy:
   - provider: s3
     access_key_id: $AWS_ACCESS_KEY
