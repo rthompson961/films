@@ -16,9 +16,7 @@ class FilmController extends AbstractController
      */
     public function index(FilmRepository $filmRepository)
     {
-        return $this->render('film/index.html.twig', [
-            'films' => $filmRepository->findAll()
-        ]);
+        return $this->render('film/index.html.twig');
     }
 
     /**
