@@ -8,6 +8,6 @@
 {% for film in films %}
     <h4>{{ film }}</h4>
 
-    <p><a href="{{ path('film', { id : film.id }) }}">View</a></p>
+    <p><a href="{{ path('film', { slug: film.slug }) }}">View</a></p>
 {% endfor %}
 {% endblock %}

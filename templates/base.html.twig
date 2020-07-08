@@ -10,7 +10,7 @@
             <h1><a href="{{ path('home') }}">Films</a></h1>
             <ul>
                 {% for film in films %}
-                    <li><a href="{{ path('film', { id: film.id }) }}">{{ film }}</a></li>
+                    <li><a href="{{ path('film', { slug: film.slug }) }}">{{ film }}</a></li>
                 {% endfor %}
             </ul>
         </header>

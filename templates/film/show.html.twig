@@ -19,10 +19,10 @@
     {% endfor %}
 
     {% if previous >= 0 %}
-        <a href="{{ path('film', { id: film.id, offset: previous }) }}">Previous</a>
+        <a href="{{ path('film', { slug: film.slug, offset: previous }) }}">Previous</a>
     {% endif %}
     {% if next < comments|length %}
-        <a href="{{ path('film', { id: film.id, offset: next }) }}">Next</a>
+        <a href="{{ path('film', { slug: film.slug, offset: next }) }}">Next</a>
     {% endif %}
 
 {% else %}

@@ -20,7 +20,7 @@ class FilmController extends AbstractController
     }
 
     /**
-     * @Route("/show/{id}", name="film")
+     * @Route("/show/{slug}", name="film")
      */
     public function show(Film $film, Request $request, CommentRepository $commentRepository)
     {
