@@ -12,6 +12,7 @@
                 {% for film in films %}
                     <li><a href="{{ path('film', { slug: film.slug }) }}">{{ film }}</a></li>
                 {% endfor %}
+                <li><a href="{{ path('easyadmin') }}">Admin</a></li>
             </ul>
         </header>
 
