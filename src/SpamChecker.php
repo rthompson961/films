@@ -47,8 +47,8 @@ class SpamChecker
 
         $content = $response->getContent();
         if (isset($headers['x-akismet-debug-help'][0])) {
-            throw new \RuntimeException(sprint(
-                'Unable to check for spam: $s (%s).',
+            throw new \RuntimeException(sprintf(
+                'Unable to check for spam: %s (%s).',
                 $content,
                 $headers['x-akismet-debug-help'][0]
             ));
