@@ -52,10 +52,8 @@ class SpamChecker
                 $content,
                 $headers['x-akismet-debug-help'][0]
             ));
-
-            return 'true' === $content ? 1 : 0;
         }
 
-        return 2;
+        return 'true' === $content ? 1 : 0;
     }
 }
