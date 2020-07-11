@@ -12,6 +12,8 @@ services:
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
         bind:
             $photoDir: "%kernel.project_dir%/public/uploads"
+            $akismetKey: "%env(AKISMET_KEY)%"
+            $publicDns: "%env(PUBLIC_DNS)%"
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
     App\:
