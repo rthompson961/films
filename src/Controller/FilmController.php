@@ -5,16 +5,24 @@ namespace App\Controller;
 use App\Entity\Comment;
 use App\Entity\Film;
 use App\Form\CommentFormType;
+use App\Message\CommentMessage;
 use App\Repository\CommentRepository;
 use App\Repository\FilmRepository;
-use App\SpamChecker;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 class FilmController extends AbstractController
 {
+    private $bus;
+
+    public function __construct(MessageBusInterface $bus)
+    {
+        $this->bus = $bus;
+    }
+
     /**
      * @Route("/", name="home")
      */
@@ -30,7 +38,6 @@ class FilmController extends AbstractController
         Film $film,
         Request $request,
         CommentRepository $commentRepository,
-        SpamChecker $spamChecker,
         string $photoDir
     ) {
         $comment = new Comment();
@@ -54,6 +61,7 @@ class FilmController extends AbstractController
             }
 
             $entityManager->persist($comment);
+            $entityManager->flush();
 
             // spam check
             $context = [
@@ -62,11 +70,8 @@ class FilmController extends AbstractController
                 'referrer'   => $request->headers->get('referer'),
                 'permalink'  => $request->getUri(),
             ];
-            if (2 === $spamChecker->getSpamScore($comment, $context)) {
-                throw new \RuntimeException('Blatant spam detected');
-            }
 
-            $entityManager->flush();
+            $this->bus->dispatch(new CommentMessage($comment->getId(), $context));
 
             return $this->redirectToRoute('film', ['slug' => $film->getSlug()]);
         }

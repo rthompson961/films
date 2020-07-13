@@ -2,6 +2,8 @@
 
 namespace App\Tests;
 
+use App\Repository\CommentRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class FilmControllerTest extends WebTestCase
@@ -22,11 +24,17 @@ class FilmControllerTest extends WebTestCase
         $client->submitForm('Submit', [
             'comment_form[author]' => 'Sarah',
             'comment_form[text]' => 'Some feedback from an automated functional test',
-            'comment_form[email]' => 'me@automat.ed',
+            'comment_form[email]' => $email = 'me@automat.ed',
             'comment_form[photofile]' => dirname(__DIR__) . '/public/uploads/' . '653babf4bbf5.jpg',
         ]);
 
         $this->assertResponseRedirects();
+
+        // simulate comment validation
+        $comment = self::$container->get(CommentRepository::class)->findOneByEmail($email);
+        $comment->setState('published');
+        self::$container->get(EntityManagerInterface::class)->flush();
+
         $client->followRedirect();
         $this->assertSelectorTextSame('p', 'There are 4 comments.');
         $this->assertEquals(2, $crawler->filter('h4')->count());

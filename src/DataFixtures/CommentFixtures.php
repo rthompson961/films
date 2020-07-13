@@ -18,6 +18,7 @@ class CommentFixtures extends Fixture implements DependentFixtureInterface
                 'email'    => 'j.torrance@overlook.com',
                 'created'  => '2020-07-03 11:47:15',
                 'photo'    => '8620c4d4ec7b.jpg',
+                'state'    => 'published',
                 'ref'      => 'shining'
 
             ],
@@ -27,6 +28,7 @@ class CommentFixtures extends Fixture implements DependentFixtureInterface
                 'email'    => 'johnsmith@gmail.com',
                 'created'  => '2020-07-03 14:52:38',
                 'photo'    => '653babf4bbf5.jpg',
+                'state'    => 'published',
                 'ref'      => 'shining'
 
             ],
@@ -36,6 +38,7 @@ class CommentFixtures extends Fixture implements DependentFixtureInterface
                 'email'    => 'alicejones@hotmail.com',
                 'created'  => '2020-07-03 18:13:49',
                 'photo'    => '653babf4bbf5.jpg',
+                'state'    => 'published',
                 'ref'      => 'shining'
 
             ],
@@ -45,6 +48,7 @@ class CommentFixtures extends Fixture implements DependentFixtureInterface
                 'email'    => 'emmett@brown.edu.gov',
                 'created'  => '2020-07-03 18:47:15',
                 'photo'    => '6bdf32889159.jpg',
+                'state'    => 'published',
                 'ref'      => 'future'
             ]
         ];
@@ -56,6 +60,7 @@ class CommentFixtures extends Fixture implements DependentFixtureInterface
             $comment->setEmail($item['email']);
             $comment->setCreatedAt(new \DateTime($item['created']));
             $comment->setPhoto($item['photo']);
+            $comment->setState($item['state']);
             $comment->setFilm($this->getReference('film-' . $item['ref']));
 
             $manager->persist($comment);
