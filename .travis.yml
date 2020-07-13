@@ -11,7 +11,7 @@ addons:
 cache:
   directories:
     - $HOME/.composer/cache/files
-before_install: pecl install amqp
+before_install: printf "\n" | pecl install amqp
 before_script:
   - composer install --no-interaction
   - composer dump-env prod --empty
