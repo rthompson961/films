@@ -3,3 +3,7 @@ os: linux
 files:
   - source: ./
     destination: /home/ubuntu/films
+hooks:
+  AfterInstall:
+    - location: postdeploy.sh
+      timeout: 180
