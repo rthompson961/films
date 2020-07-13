@@ -11,6 +11,7 @@ addons:
 cache:
   directories:
     - $HOME/.composer/cache/files
+before_install: phpenv config-add myconfig.ini
 before_script:
   - composer install --no-interaction
   - composer dump-env prod --empty
