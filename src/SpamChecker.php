@@ -40,14 +40,14 @@ class SpamChecker
             ])
         ]);
 
-        // is comment spam
-        $content = $response->getContent();
-        if ($content === 'true') {
+        $headers = $response->getHeaders();
+        // is comment blatant spam
+        if ('discard' === ($headers['x-akismet-pro-tip'][0] ?? '')) {
             return 2;
         }
 
+        $content = $response->getContent();
         // is there an error
-        $headers = $response->getHeaders();
         if (isset($headers['x-akismet-debug-help'][0])) {
             throw new \RuntimeException(sprintf(
                 'Unable to check for spam: %s (%s).',
