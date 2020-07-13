@@ -1,9 +1,13 @@
 os: linux
-dist: bionic
+dist: xenial
 language: php
 php: 7.4
 services:
   - mysql
+addons:
+  apt:
+    packages:
+    - rabbitmq-server 
 cache:
   directories:
     - $HOME/.composer/cache/files
