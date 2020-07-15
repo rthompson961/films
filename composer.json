@@ -33,6 +33,8 @@
         "symfony/web-link": "5.1.*",
         "symfony/workflow": "5.1.*",
         "symfony/yaml": "5.1.*",
+        "twig/cssinliner-extra": "^3.0",
+        "twig/inky-extra": "^3.0",
         "twig/intl-extra": "^3.0"
     },
     "require-dev": {
