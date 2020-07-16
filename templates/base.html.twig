@@ -8,7 +8,7 @@
 
         {% block stylesheets %}
             <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,500,500i,600,600i&display=swap" rel="stylesheet" />
-            {{ encore_entry_link_tags('app') }}
+            <link href="{{ asset('app.css') }}" rel="stylesheet" />
         {% endblock %}
     </head>
     <body>
@@ -58,7 +58,9 @@
         </footer>
 
         {% block javascripts %}
-            {{ encore_entry_script_tags('app') }}
+            <script src="{{ asset('runtime.js') }}"></script>
+            <script src="{{ asset('vendors~app.js') }}"></script>
+            <script src="{{ asset('app.js') }}"></script>
         {% endblock %}
     </body>
 </html>
