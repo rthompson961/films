@@ -1,3 +1,5 @@
 {% for film in films %}
-    <li><a href="{{ path('film', { slug: film.slug }) }}">{{ film }}</a></li>
+    <a class="nav-film" href="{{ path('film', { slug: film.slug }) }}">
+        {{ film }}
+    </a>
 {% endfor %}

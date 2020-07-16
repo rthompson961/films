@@ -1,13 +1,32 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Films{% endblock %}
+{% block title %}Film Comments{% endblock %}
 
 {% block body %}
-<h2>Give your feedback!</h2>
+    <h2 class="mb-5">
+        Give your feedback!
+    </h2>
 
-{% for film in films %}
-    <h4>{{ film }}</h4>
+    {% for row in films|batch(4) %}
+        <div class="row">
+            {% for film in row %}
+                <div class="col-12 col-md-6 col-lg-3 mb-4">
+                    <div class="card border shadow lift">
+                        <div class="card-body">
+                            <div class="card-title">
+                                <h4 class="font-weight-light">
+                                    {{ film }}
+                                </h4>
+                            </div>
 
-    <p><a href="{{ path('film', { slug: film.slug }) }}">View</a></p>
-{% endfor %}
+                            <a href="{{ path('film', { slug: film.slug }) }}"
+                               class="btn btn-sm btn-blue stretched-link">
+                                View
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endfor %}
 {% endblock %}

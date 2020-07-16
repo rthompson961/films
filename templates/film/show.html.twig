@@ -1,36 +1,63 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ film }}{% endblock %}
+{% block title %}Film Comments - {{ film }}{% endblock %}
 
 {% block body %}
-<h2>{{ film }}</h2>
+    <h2 class="mb-5">
+        {{ film }}
+    </h2>
 
-{% if comments|length > 0 %}
-    <p>There are {{ comments|length }} comments.</p>
+    <div class="row">
+        <div class="col-12 col-lg-8">
+            {% if comments|length > 0 %}
+                {% for comment in comments %}
+                    <div class="media shadow border rounded-lg p-3 mb-4">
+                        <div class="comment-img mr-3">
+                            {% if comment.photo %}
+                                <a href="{{ asset('uploads/' ~ comment.photo) }}" target="_blank">
+                                    <img src="{{ asset('uploads/' ~ comment.photo) }}" />
+                                </a>
+                            {% endif %}
+                        </div>
 
-    {% for comment in comments %}
-        {% if comment.photo %}
-            <img src="{{ asset('uploads/') ~ comment.photo }}" alt="{{ film }}" />
-        {% endif %}
+                        <div class="media-body">
+                            <h4 class="font-weight-light mb-0">
+                                {{ comment.author }}
+                            </h4>
 
-        <h4>{{ comment.author }}</h4>
-        <small>{{ comment.createdAt|format_datetime('medium', 'short') }}</small>
-        <p>{{ comment.text }}</p>
-    {% endfor %}
+                            <div class="mb-2">
+                                <small class="text-muted text-uppercase">
+                                    {{ comment.createdAt|format_datetime('medium', 'short') }}
+                                </small>
+                            </div>
 
-    {% if previous >= 0 %}
-        <a href="{{ path('film', { slug: film.slug, offset: previous }) }}">Previous</a>
-    {% endif %}
-    {% if next < comments|length %}
-        <a href="{{ path('film', { slug: film.slug, offset: next }) }}">Next</a>
-    {% endif %}
+                            <div class="comment-text">
+                                {{ comment.text|nl2br }}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                <div class="comment_count">There are {{ comments|length }} comment(s)</div>
+                {% if previous >= 0 %}
+                    <a class="prev" href="{{ path('film', { slug: film.slug, offset: previous }) }}">Previous</a>
+                {% endif %}
+                {% if next < comments|length %}
+                    <a class="next" href="{{ path('film', { slug: film.slug, offset: next }) }}">Next</a>
+                {% endif %}
+            {% else %}
+                <div class="text-center">
+                    No comments have been posted yet.
+                </div>
+            {% endif %}
+        </div>
+        <div class="col-12 col-lg-4">
+            <div class="bg-light shadow border rounded-lg p-4">
+                <h3 class="font-weight-light">
+                    Add your own feedback
+                </h3>
 
-{% else %}
-    <p>No comments posted.</p>
-{% endif %}
-
-<h2>Add Comment</h2>
-
-{{ form(comment_form) }}
-
+                {{ form(comment_form) }}
+            </div>
+        </div>
+    </div>
 {% endblock %}
