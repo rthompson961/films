@@ -11,16 +11,20 @@ use App\Repository\FilmRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Twig\Environment;
 
 class FilmController extends AbstractController
 {
     private $bus;
+    private $twig;
 
-    public function __construct(MessageBusInterface $bus)
+    public function __construct(MessageBusInterface $bus, Environment $twig)
     {
         $this->bus = $bus;
+        $this->twig = $twig;
     }
 
     /**
@@ -28,7 +32,25 @@ class FilmController extends AbstractController
      */
     public function index(FilmRepository $filmRepository)
     {
-        return $this->render('film/index.html.twig');
+        $response = new Response($this->twig->render('film/index.html.twig', [
+            'films' => $filmRepository->findAll()
+        ]));
+        $response->setSharedMaxAge(3600);
+
+        return $response;
+    }
+
+    /**
+     * @Route("/film_header", name="film_header")
+     */
+    public function filmHeader(FilmRepository $filmRepository)
+    {
+        $response = new Response($this->twig->render('film/header.html.twig', [
+            'films' => $filmRepository->findAll()
+        ]));
+        $response->setSharedMaxAge(3600);
+
+        return $response;
     }
 
     /**

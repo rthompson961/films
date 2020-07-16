@@ -9,9 +9,7 @@
         <header>
             <h1><a href="{{ path('home') }}">Films</a></h1>
             <ul>
-                {% for film in films %}
-                    <li><a href="{{ path('film', { slug: film.slug }) }}">{{ film }}</a></li>
-                {% endfor %}
+                {{ render_esi(path('film_header')) }}               
                 <li><a href="{{ path('easyadmin') }}">Admin</a></li>
             </ul>
         </header>
