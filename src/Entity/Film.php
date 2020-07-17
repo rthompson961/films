@@ -2,16 +2,27 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\FilmRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
 /**
  * @ORM\Entity(repositoryClass=FilmRepository::class)
  * @UniqueEntity("slug")
+ *
+ * @ApiResource(
+ *
+ collectionOperations={"get"={"normalization_context"={"groups"="film:list"}}},
+ *
+itemOperations={"get"={"normalization_context"={"groups"="film:item"}}},
+ * order={"title"="ASC"},
+ * paginationEnabled=false
+ * )
  */
 class Film
 {
@@ -19,21 +30,29 @@ class Film
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     *
+     * @Groups({"film:list", "film:item"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=75)
+     *
+     * @Groups({"film:list", "film:item"})
      */
     private $title;
 
     /**
      * @ORM\Column(type="string", length=4)
+     *
+     * @Groups({"film:list", "film:item"})
      */
     private $year;
 
     /**
      * @ORM\Column(type="boolean")
+     *
+     * @Groups({"film:list", "film:item"})
      */
     private $isShowing;
 
@@ -44,6 +63,8 @@ class Film
 
     /**
      * @ORM\Column(type="string", length=80, unique=true)
+     *
+     * @Groups({"film:list", "film:item"})
      */
     private $slug;
 
