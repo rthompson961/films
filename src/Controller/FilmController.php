@@ -12,6 +12,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Notifier\Notification\Notification;
+use Symfony\Component\Notifier\NotifierInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 class FilmController extends AbstractController
@@ -48,6 +50,7 @@ class FilmController extends AbstractController
         Film $film,
         Request $request,
         CommentRepository $commentRepository,
+        NotifierInterface $notifier,
         string $photoDir
     ) {
         $comment = new Comment();
@@ -82,6 +85,11 @@ class FilmController extends AbstractController
             ];
 
             $this->bus->dispatch(new CommentMessage($comment->getId(), $context));
+
+            $notifier->send(new Notification(
+                'Thank you, your comment will be posted after moderation.',
+                ['browser']
+            ));
 
             return $this->redirectToRoute('film', ['slug' => $film->getSlug()]);
         }
