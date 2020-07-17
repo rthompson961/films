@@ -6,8 +6,10 @@ use App\Entity\Comment;
 use App\Message\CommentMessage;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bridge\Twig\Mime\NotificationEmail;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Workflow\Registry;
@@ -32,8 +34,13 @@ class AdminController extends AbstractController
     /**
      * @Route("/admin/comment/review/{id}", name="review_comment")
      */
-    public function reviewComment(Request $request, Comment $comment, Registry $registry)
-    {
+    public function reviewComment(
+        Request $request,
+        Comment $comment,
+        Registry $registry,
+        MailerInterface $mailer,
+        string $adminEmail
+    ) {
         $accepted = !$request->query->get('reject');
 
         $machine = $registry->get($comment);
@@ -50,6 +57,13 @@ class AdminController extends AbstractController
 
         if ($accepted) {
             $this->bus->dispatch(new CommentMessage($comment->getId()));
+            
+            $mailer->send((new NotificationEmail())
+                ->subject('Your comment has been approved')
+                ->htmlTemplate('emails/comment_approval.html.twig')
+                ->from($adminEmail)
+                ->to($comment->getEmail())
+                ->context(['comment' => $comment]));
         }
 
         return $this->render('admin/review.html.twig', [
