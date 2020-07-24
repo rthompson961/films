@@ -13,6 +13,7 @@ class FilmControllerTest extends WebTestCase
         $client = static::createClient();
         $crawler = $client->request('GET', '/');
 
+        $this->assertResponseIsSuccessful();
         $this->assertEquals(2, $crawler->filter('h4')->count());
     }
 
@@ -25,7 +26,7 @@ class FilmControllerTest extends WebTestCase
             'comment_form[author]' => 'Sarah',
             'comment_form[text]' => 'Some feedback from an automated functional test',
             'comment_form[email]' => $email = 'me@automat.ed',
-            'comment_form[photofile]' => dirname(__DIR__) . '/public/uploads/' . '653babf4bbf5.jpg',
+            'comment_form[photofile]' => dirname(__DIR__) . '/public/uploads/653babf4bbf5.jpg',
         ]);
 
         $this->assertResponseRedirects();
