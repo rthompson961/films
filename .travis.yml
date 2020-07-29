@@ -43,7 +43,6 @@ deploy:
     on: *2
 script:
   - phpunit
-  - zip -r latest *
-  - zip -r latest .env.local.php
+  - zip -r latest * .env.local.php
   - mkdir -p films_upload
   - mv latest.zip films_upload/latest.zip
