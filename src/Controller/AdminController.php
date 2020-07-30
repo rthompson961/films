@@ -46,8 +46,6 @@ class AdminController extends AbstractController
         $machine = $registry->get($comment);
         if ($machine->can($comment, 'publish')) {
             $transition = $accepted ? 'publish' : 'reject';
-        } elseif ($machine->can($comment, 'publish_ham')) {
-            $transition = $accepted ? 'publish_ham' : 'reject_ham';
         } else {
             return new Response('Comment already reviewed or not in correct state.');
         }

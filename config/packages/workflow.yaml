@@ -12,31 +12,20 @@ framework:
         initial_marking: submitted
         places:
           - submitted
-          - ham
-          - potential_spam
           - spam
+          - notspam
           - rejected
           - published
         transitions:
-          accept:
-            from: submitted
-            to:   ham
-          might_be_spam:
-            from: submitted
-            to:   potential_spam
-          reject_spam:
+          fail:
             from: submitted
             to:   spam
-          publish:
-            from: potential_spam
-            to:   published
+          pass:
+            from: submitted
+            to:   notspam
           reject:
-            from: potential_spam
+            from: notspam
             to:   rejected
-          publish_ham:
-            from: ham
+          publish:
+            from: notspam
             to:   published
-          reject_ham:
-            from: ham
-            to:   rejected
-

@@ -19,12 +19,12 @@ class SpamChecker
     }
 
     /**
-     * @return int Spam score: 0: not spam, 1: maybe spam, 2: blatant spam
-     * email akismet-guaranteed-spam@example.com always returns spam
+     * @return bool true if message is flagged as spam
+     * email akismet-guaranteed-spam@example.com will always return true
      *
      * @throws \RuntimeException if the call did not work
      */
-    public function getSpamScore(Comment $comment, array $context): int
+    public function isSpam(Comment $comment, array $context): bool
     {
         $response = $this->client->request('POST', $this->endpoint, [
             'body' => array_merge($context, [
@@ -39,23 +39,20 @@ class SpamChecker
                 'is_test' => true
             ])
         ]);
-
         $headers = $response->getHeaders();
-        // is comment blatant spam
-        if ('discard' === ($headers['x-akismet-pro-tip'][0] ?? '')) {
-            return 2;
-        }
 
-        $content = $response->getContent();
-        // is there an error
+        // something went wrong
         if (isset($headers['x-akismet-debug-help'][0])) {
             throw new \RuntimeException(sprintf(
                 'Unable to check for spam: %s (%s).',
-                $content,
+                $response->getContent(),
                 $headers['x-akismet-debug-help'][0]
             ));
         }
 
-        return 'true' === $content ? 1 : 0;
+        if ($response->getContent() === 'true') {
+            return true;
+        }
+        return false;
     }
 }

@@ -6,7 +6,6 @@ use App\Message\CommentMessage;
 use App\Repository\CommentRepository;
 use App\Service\SpamChecker;
 use Doctrine\ORM\EntityManagerInterface;
-use Psr\log\LoggerInterface;
 use Symfony\Bridge\Twig\Mime\NotificationEmail;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
@@ -22,7 +21,6 @@ class CommentMessageHandler implements MessageHandlerInterface
     private $workflow;
     private $mailer;
     private $adminEmail;
-    private $logger;
 
     public function __construct(
         EntityManagerInterface $entityManager,
@@ -31,8 +29,7 @@ class CommentMessageHandler implements MessageHandlerInterface
         MessageBusInterface $bus,
         WorkflowInterface $commentStateMachine,
         MailerInterface $mailer,
-        string $adminEmail,
-        LoggerInterface $logger = null
+        string $adminEmail
     ) {
         $this->entityManager = $entityManager;
         $this->spamChecker = $spamChecker;
@@ -41,7 +38,6 @@ class CommentMessageHandler implements MessageHandlerInterface
         $this->workflow = $commentStateMachine;
         $this->mailer = $mailer;
         $this->adminEmail = $adminEmail;
-        $this->logger = $logger;
     }
 
     public function __invoke(CommentMessage $message)
@@ -51,34 +47,23 @@ class CommentMessageHandler implements MessageHandlerInterface
             return;
         }
 
-        if ($this->workflow->can($comment, 'accept')) {
-            $score = $this->spamChecker->getSpamScore($comment, $message->getContext());
-            $transition = 'accept';
-            if ($score == 2) {
-                $transition = 'reject_spam';
-            } elseif ($score === 1) {
-                $transition = 'might_be_spam';
+        if ($this->workflow->can($comment, 'pass')) {
+            $spam = $this->spamChecker->isSpam($comment, $message->getContext());
+            $transition = 'pass';
+            if ($spam) {
+                $transition = 'fail';
             }
 
             $this->workflow->apply($comment, $transition);
             $this->entityManager->flush();
-
             $this->bus->dispatch($message);
-        } elseif ($this->workflow->can($comment, 'publish') || $this->workflow->can($comment, 'publish_ham')) {
+        } elseif ($this->workflow->can($comment, 'publish')) {
             $this->mailer->send((new NotificationEmail())
                 ->subject('New comment posted')
                 ->htmlTemplate('emails/comment_notification.html.twig')
                 ->from($this->adminEmail)
                 ->to($this->adminEmail)
                 ->context(['comment' => $comment]));
-        } elseif ($this->logger) {
-            $this->logger->debug(
-                'Dropping comment message',
-                [
-                    'comment' => $comment->getId(),
-                    'state'   => $comment->getState()
-                ]
-            );
         }
 
         $this->entityManager->flush();
