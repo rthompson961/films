@@ -34,16 +34,6 @@ class FilmController extends AbstractController
     }
 
     /**
-     * @Route("/film_header", name="film_header")
-     */
-    public function filmHeader(FilmRepository $filmRepository)
-    {
-        return $this->render('film/header.html.twig', [
-            'films' => $filmRepository->findAll()
-        ]);
-    }
-
-    /**
      * @Route("/show/{slug}", name="film")
      */
     public function show(

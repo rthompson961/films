@@ -39,7 +39,11 @@
 
             <nav class="bg-light border-bottom">
                 <div class="container">
-                    {{ render(path('film_header')) }}
+                    {% for film in films %}
+                        <a class="nav-film" href="{{ path('film', { slug: film.slug }) }}">
+                            {{ film }}
+                        </a>
+                    {% endfor %}
                 </div>
             </nav>
         </header>
