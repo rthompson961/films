@@ -4,7 +4,7 @@ namespace App\MessageHandler;
 
 use App\Message\CommentMessage;
 use App\Repository\CommentRepository;
-use App\SpamChecker;
+use App\Service\SpamChecker;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\log\LoggerInterface;
 use Symfony\Bridge\Twig\Mime\NotificationEmail;
