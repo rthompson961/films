@@ -8,6 +8,7 @@ use App\Form\CommentFormType;
 use App\Message\CommentMessage;
 use App\Repository\CommentRepository;
 use App\Repository\FilmRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,13 +19,6 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class FilmController extends AbstractController
 {
-    private $bus;
-
-    public function __construct(MessageBusInterface $bus)
-    {
-        $this->bus = $bus;
-    }
-
     /**
      * @Route("/", name="home")
      */
@@ -38,20 +32,20 @@ class FilmController extends AbstractController
      */
     public function show(
         Film $film,
-        Request $request,
+        MessageBusInterface $bus,
         CommentRepository $commentRepository,
+        EntityManagerInterface $entityManager,
         NotifierInterface $notifier,
-        string $photoDir
+        string $photoDir,
+        Request $request
     ) {
         $comment = new Comment();
         $form = $this->createForm(CommentFormType::class, $comment);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager = $this->getDoctrine()->getManager();
-
             $comment->setFilm($film);
 
-            // if photo submitted
+            // photo submitted
             if ($photo = $form['photofile']->getData()) {
                 // random file name
                 $filename = bin2hex(random_bytes(6)) . '.' . $photo->guessExtension();
@@ -74,7 +68,7 @@ class FilmController extends AbstractController
                 'permalink'  => $request->getUri(),
             ];
 
-            $this->bus->dispatch(new CommentMessage($comment->getId(), $context));
+            $bus->dispatch(new CommentMessage($comment->getId(), $context));
 
             $notifier->send(new Notification(
                 'Thank you, your comment will be posted after moderation.',
