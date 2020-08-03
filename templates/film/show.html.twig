@@ -46,7 +46,7 @@
                         </div>
                     </div>
                 {% endfor %}
-                <div class="comment_count">There are {{ comments|length }} comment(s)</div>
+                <div class="comment-count">There are {{ comments|length }} comment(s)</div>
                 {% if previous >= 0 %}
                     <a class="prev" href="{{ path('film', { slug: film.slug, offset: previous }) }}">Previous</a>
                 {% endif %}
