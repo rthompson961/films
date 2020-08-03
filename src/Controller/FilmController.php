@@ -87,7 +87,7 @@ class FilmController extends AbstractController
             'comments' => $paginator,
             'previous' => $offset - CommentRepository::PAGINATOR_PER_PAGE,
             'next' => min(count($paginator), $offset + CommentRepository::PAGINATOR_PER_PAGE),
-            'comment_form' => $form->createView()
+            'form' => $form->createView()
         ]);
     }
 }
