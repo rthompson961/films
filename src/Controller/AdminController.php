@@ -7,7 +7,6 @@ use App\Message\CommentMessage;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bridge\Twig\Mime\NotificationEmail;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -17,44 +16,32 @@ use Twig\Environment;
 
 class AdminController extends AbstractController
 {
-    private $twig;
-    private $entityManager;
-    private $bus;
-
-    public function __construct(
-        Environment $twig,
-        EntityManagerInterface $entityManager,
-        MessageBusInterface $bus
-    ) {
-        $this->twig = $twig;
-        $this->entityManager = $entityManager;
-        $this->bus = $bus;
-    }
-
     /**
-     * @Route("/admin/comment/review/{id}", name="review_comment")
+     * @Route(
+     *      "/admin/comment/{action}/{id}",
+     *      name="review_comment",
+     *      requirements={"action"="publish|reject", "id"="\d+"}
+     * )
      */
     public function reviewComment(
-        Request $request,
+        string $action,
         Comment $comment,
         Registry $registry,
+        EntityManagerInterface $entityManager,
+        MessageBusInterface $bus,
         MailerInterface $mailer,
         string $adminEmail
     ) {
-        $accepted = !$request->query->get('reject');
-
         $machine = $registry->get($comment);
-        if ($machine->can($comment, 'publish')) {
-            $transition = $accepted ? 'publish' : 'reject';
-        } else {
+        if (!$machine->can($comment, 'publish')) {
             return new Response('Comment already reviewed or not in correct state.');
         }
 
-        $machine->apply($comment, $transition);
-        $this->entityManager->flush();
+        $machine->apply($comment, $action);
+        $entityManager->flush();
 
-        if ($accepted) {
-            $this->bus->dispatch(new CommentMessage($comment->getId()));
+        if ($action === 'publish') {
+            $bus->dispatch(new CommentMessage($comment->getId()));
             
             $mailer->send((new NotificationEmail())
                 ->subject('Your comment has been approved')
@@ -65,7 +52,7 @@ class AdminController extends AbstractController
         }
 
         return $this->render('admin/review.html.twig', [
-            'transition' => $transition,
+            'transition' => $action,
             'comment' => $comment
         ]);
     }

@@ -10,6 +10,6 @@
 
 {% block action %}
     <spacer size="16"></spacer>
-    <button href="{{ url('review_comment', { id: comment.id }) }}">Accept</button>
-    <button href="{{ url('review_comment', { id: comment.id, reject: true }) }}">Reject</button>
+    <button href="{{ url('review_comment', { action: 'publish', id: comment.id }) }}">Publish</button>
+    <button href="{{ url('review_comment', { action: 'reject',  id: comment.id }) }}">Reject</button>
 {% endblock %}
