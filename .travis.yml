@@ -42,7 +42,7 @@ deploy:
     region: eu-west-2
     on: *2
 script:
-  - phpunit
+  - ./bin/phpunit
   - zip -r latest * .env.local.php
   - mkdir -p films_upload
   - mv latest.zip films_upload/latest.zip
