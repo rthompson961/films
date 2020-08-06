@@ -15,6 +15,8 @@ class FilmControllerTest extends WebTestCase
 
         $this->assertResponseIsSuccessful();
         $this->assertEquals(2, $crawler->filter('h4')->count());
+        $this->assertSelectorTextSame('h4', 'The Shining');
+        $this->assertEquals('/show/the-shining', $crawler->filter('div.card-body a')->attr('href'));
     }
 
     public function testShow()
@@ -37,8 +39,9 @@ class FilmControllerTest extends WebTestCase
         self::$container->get(EntityManagerInterface::class)->flush();
 
         $client->followRedirect();
-        $this->assertSelectorTextSame('div.comment-count', 'There are 4 comment(s)');
         $this->assertEquals(2, $crawler->filter('h4')->count());
+        $this->assertSelectorTextSame('h4', 'Sarah');
+        $this->assertSelectorTextSame('div.comment-count', 'There are 4 comment(s)');
         $this->assertEquals('/show/the-shining?offset=2', $crawler->filter('a.next')->attr('href'));
     }
 }
