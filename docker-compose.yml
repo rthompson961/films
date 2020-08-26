@@ -1,0 +1,37 @@
+version: "3.8"
+networks:
+  lamp:
+    name: lamp
+    driver: bridge
+services:
+  apache:
+    container_name: apache
+    image: rthompson961/apache
+    networks:
+      - lamp
+    ports:
+      - "80:80"
+    volumes:
+      - $PWD:/var/www/html
+    environment:
+      - DATABASE_URL=mysql://root:root@mysql:3306/films?serverVersion=5.7
+      - MESSENGER_TRANSPORT_DSN=amqp://guest:guest@amqp:5672/%2f/messages
+    depends_on:
+      - mysql
+      - amqp
+  mysql:
+    container_name: mysql
+    image: "mysql:5.7"
+    networks:
+      - lamp
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+  amqp:
+    container_name: amqp
+    image: "rabbitmq:3.7-management"
+    networks:
+      - lamp
+    ports:
+      - "5672:5672"

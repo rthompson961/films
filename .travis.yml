@@ -1,19 +1,22 @@
 os: linux
-dist: xenial
+dist: bionic
 language: php
 php: 7.4
 services:
-  - mysql
-addons:
-  apt:
-    packages:
-    - rabbitmq-server 
+  - docker
 cache:
   directories:
     - $HOME/.composer/cache/files
+env:
+  DOCKER_COMPOSE_VERSION: 1.26.2
 before_install: 
   - sudo apt install librabbitmq-dev
   - sudo printf "\n" | pecl install amqp
+  - sudo rm /usr/local/bin/docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
+  - docker-compose up -d
 before_script:
   - composer install --no-interaction
   - composer dump-env prod --empty
@@ -46,3 +49,5 @@ script:
   - zip -r latest * .env.local.php
   - mkdir -p films_upload
   - mv latest.zip films_upload/latest.zip
+after_script:
+  - docker-compose down
